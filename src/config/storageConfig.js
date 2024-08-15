@@ -8,6 +8,6 @@
 const { Storage } = require('@google-cloud/storage');
 
 const storage = new Storage();
-const bucketName = 'user-soothemate';
+const bucketName = 'tsm-app';
 const bucket = storage.bucket(bucketName);
 module.exports = bucket;

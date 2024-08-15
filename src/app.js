@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const routes = require('./routes');
-// const errorHandler = require('./middleware/errorHandler');
+const errorHandler = require('./middleware/errorHandler');
 /**
  * Main application setup.
  *
@@ -11,6 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(routes);
-// app.use(errorHandler);
+app.use(errorHandler);
+app.use(express.urlencoded({ extended: true }));
 
 module.exports = app;
