@@ -1,25 +1,3 @@
-// const express = require('express');
-// const router = express.Router();;
-// const responseFormatter = require('../utils/responseFormatter');
-// const messages = require('../constant/responseMessages');
-// // const userRoutes = require('./userRoutes');
-// const taskRoutes = require('./taskRoutes');
-// const projectRoutes = require('./projectRoutes');
-
-// // router.use('/users', userRoutes);
-// router.use('/tasks', taskRoutes);
-// router.use('/projects', projectRoutes);
-
-// /**
-//  * Welcome route.
-//  *
-//  * @name GET /
-//  */
-// router.get('/', (req, res) => {
-//     return responseFormatter.success(res, messages.WELCOME_MESSAGE  )
-//   })
-
-// module.exports = router;
 const express = require('express');
 const router = express.Router();
 const authRoutes = require('./authRoutes');

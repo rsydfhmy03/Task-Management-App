@@ -1,15 +1,3 @@
-// const express = require('express');
-// const router = express.Router();
-// const TaskController = require('../controllers/taskController');
-// const authenticate = require('../middleware/authMiddleware');
-
-// router.post('/', authenticate, TaskController.createTask);
-// // router.get('/', authenticate, TaskController.getAllTasks);
-// // router.get('/:id', authenticate, TaskController.getTaskById);
-// router.put('/:id', authenticate, TaskController.updateTask);
-// router.delete('/:id', authenticate, TaskController.deleteTask);
-
-// module.exports = router;
 const express = require('express');
 const { body } = require('express-validator');
 const { createTaskHandler, getTasksHandler, updateTaskHandler, deleteTaskHandler } = require('../controllers/taskController');

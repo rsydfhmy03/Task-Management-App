@@ -1,6 +1,6 @@
 const { Project } = require('../models');
 const ResponseFormatter = require('../utils/responseFormatter');
-
+const { generateSimpleIdProject } = require('../utils/generateUniqueId');
 /**
  * Handler for creating a new project.
  *
@@ -9,8 +9,9 @@ const ResponseFormatter = require('../utils/responseFormatter');
  */
 async function createProjectHandler(req, res) {
   try {
-    const { name, description } = req.body;
-    const project = await Project.create({ name, description, user_id: req.user.id });
+    const id = generateSimpleIdProject();
+    const { title, description } = req.body;
+    const project = await Project.create({id, title , description, userId: req.user.id });
 
     return ResponseFormatter.created(res, 'Project created successfully', project);
   } catch (error) {
@@ -26,7 +27,9 @@ async function createProjectHandler(req, res) {
  */
 async function getProjectsHandler(req, res) {
   try {
-    const projects = await Project.findAll({ where: { user_id: req.user.id } });
+    // const projects = await Project.findAll({ where: { user_id: req.user.id } });
+    
+    const projects = await Project.findAll({ where: { userId: req.user.id } });
     return ResponseFormatter.success(res, 'Projects retrieved successfully', projects);
   } catch (error) {
     return ResponseFormatter.error(res, error.message);
