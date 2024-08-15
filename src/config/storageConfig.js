@@ -8,6 +8,6 @@
 const { Storage } = require('@google-cloud/storage');
 
 const storage = new Storage();
-const bucketName = 'tsm-app';
+const bucketName = 'seal-task-management';
 const bucket = storage.bucket(bucketName);
 module.exports = bucket;

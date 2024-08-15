@@ -2,7 +2,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const ResponseFormatter = require('../utils/responseFormatter');
-
+// const { expiresIn } = require('../config/jwtConfig');
+const { secret, expiresIn } = require('../config/jwtConfig');
 /**
  * Handler for user registration.
  *
@@ -11,13 +12,14 @@ const ResponseFormatter = require('../utils/responseFormatter');
  */
 async function registerHandler(req, res) {
   try {
-    const { name, email, password, password_confirmation } = req.body;
+    const { name, email, password, gender, birthDate, password_confirmation } = req.body;
+    console.log(req.body);
     if (password !== password_confirmation) {
       return ResponseFormatter.fail(res, 'Password confirmation does not match password');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password: hashedPassword });
+    const user = await User.create({ name, email, gender, birthDate, password: hashedPassword });
 
     return ResponseFormatter.created(res, 'User registered successfully', user);
   } catch (error) {
@@ -44,8 +46,22 @@ async function loginHandler(req, res) {
       return ResponseFormatter.fail(res, 'Incorrect password', 401);
     }
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    return ResponseFormatter.success(res, 'Login successful', { token });
+    // const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const payload = { userId : user.id }
+    const token = jwt.sign(payload, secret, { expiresIn })
+    const responsePayload = {
+      access_token : token,
+      token_type : 'bearer',
+      expiresIn: 604800,
+      user : {
+        name : user.name,
+        email : user.email,
+        gender : user.gender,
+        birth_date : user.birthDate,
+        email_verified: false
+      }
+    }
+    return ResponseFormatter.success(res, 'Login successful', responsePayload );
   } catch (error) {
     return ResponseFormatter.fail(res, error.message, 401);
   }

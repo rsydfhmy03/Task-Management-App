@@ -1,0 +1,1 @@
+// Using sequelize for create table migrations in google cloud SQL

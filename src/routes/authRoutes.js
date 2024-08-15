@@ -11,7 +11,8 @@ const { registerValidator, loginValidator, updatePasswordValidator } = require('
  *
  * @name POST /auth/register
  */
-router.post('/register', registerValidator, validateRequest, registerHandler);
+router.post('/register', registerValidator,  registerHandler);
+
 
 /**
  * Route to log in a user.
