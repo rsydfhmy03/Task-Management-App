@@ -1,6 +1,35 @@
 const { Task } = require('../models');
 const ResponseFormatter = require('../utils/responseFormatter');
-
+const { isValidDate } = require('../utils/isValidDate'); 
+const { generateSimpleIdTask } = require('../utils/generateUniqueId');
+// /**
+//  * Handler for creating a new task.
+//  *
+//  * @async
+//  * @function createTaskHandler
+//  */
+// async function createTaskHandler(req, res) {
+//   try {
+//     const id =generateSimpleIdTask();
+//     const { title, description, due_date, projectId } = req.body;
+//     console.log(req.body)
+//     const task = await Task.create({ id, title, description, due_date, projectId : projectId, userId: req.user.id });
+//     const createdTask = {
+//       id: task.id,
+//       title: task.title,
+//       description: task.description,
+//       due_date: task.due_date,
+//       projectId: task.project_id,
+//       status: task.status,
+//       userId: task.userId,
+//       createdAt: task.createdAt,
+//       updatedAt: task.updatedAt,
+//     };
+//     return ResponseFormatter.created(res, 'Task created successfully', createdTask);
+//   } catch (error) {
+//     return ResponseFormatter.fail(res, error.message, 400);
+//   }
+// }
 /**
  * Handler for creating a new task.
  *
@@ -9,15 +38,42 @@ const ResponseFormatter = require('../utils/responseFormatter');
  */
 async function createTaskHandler(req, res) {
   try {
-    const { title, description, due_date, project_id } = req.body;
-    const task = await Task.create({ title, description, due_date, project_id, user_id: req.user.id });
+    const id = generateSimpleIdTask();
+    const { title, description,status, due_date, projectId } = req.body;
 
-    return ResponseFormatter.created(res, 'Task created successfully', task);
+    // Validasi due_date
+    if (due_date && !isValidDate(due_date)) {
+      return ResponseFormatter.fail(res, 'Invalid due date format', 400);
+    }
+    console.log("Pass 1")
+    if (status != undefined ) task.status = status;
+    const task = await Task.create({
+      id,
+      title,
+      description,
+      status,
+      due_date: due_date ? new Date(due_date) : null,
+      projectId,
+      userId: req.user.id
+    });
+    console.log("pass 2")
+    const createdTask = {
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      due_date: task.due_date,
+      projectId: task.projectId,
+      status: task.status,
+      userId: task.userId,
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
+    };
+    console.log("pass 3")
+    return ResponseFormatter.created(res, 'Task created successfully', createdTask);
   } catch (error) {
     return ResponseFormatter.fail(res, error.message, 400);
   }
 }
-
 /**
  * Handler for getting all tasks.
  *
@@ -26,8 +82,19 @@ async function createTaskHandler(req, res) {
  */
 async function getTasksHandler(req, res) {
   try {
-    const tasks = await Task.findAll({ where: { user_id: req.user.id } });
-    return ResponseFormatter.success(res, 'Tasks retrieved successfully', tasks);
+    const tasks = await Task.findAll({ where: { userId: req.user.id } });
+    const getTasks = tasks.map(task => ({
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      due_date: task.due_date,
+      projectId: task.projectId,
+      status: task.status,
+      userId: task.userId,
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
+    }));
+    return ResponseFormatter.success(res, 'Tasks retrieved successfully', getTasks);
   } catch (error) {
     return ResponseFormatter.error(res, error.message);
   }
@@ -42,20 +109,39 @@ async function getTasksHandler(req, res) {
 async function updateTaskHandler(req, res) {
   try {
     const { id } = req.params;
-    const { title, description, due_date, project_id } = req.body;
+    const { title, description,status, due_date, projectId } = req.body;
     const task = await Task.findByPk(id);
     
     if (!task) {
       return ResponseFormatter.fail(res, 'Task not found', 404);
     }
+    // Update hanya field yang disediakan dalam request body
+    if (title !== undefined) task.title = title;
+    if (description !== undefined) task.description = description;
+    if (status !== undefined) task.status = status;
+    if (due_date !== undefined) {
+      if (isValidDate(due_date)) {
+        task.due_date = due_date;
+      } else {
+        return ResponseFormatter.fail(res, 'Invalid due date format', 400);
+      }
+    }
 
-    task.title = title || task.title;
-    task.description = description || task.description;
-    task.due_date = due_date || task.due_date;
-    task.project_id = project_id || task.project_id;
+    if (projectId !== undefined) task.projectId = projectId;
+
     await task.save();
-
-    return ResponseFormatter.success(res, 'Task updated successfully', task);
+    const updatedTask = {
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      due_date: task.due_date,
+      projectId: task.project_id,
+      status: task.status,
+      userId: task.userId,
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
+    };
+    return ResponseFormatter.success(res, 'Task updated successfully', updatedTask);
   } catch (error) {
     return ResponseFormatter.error(res, error.message);
   }

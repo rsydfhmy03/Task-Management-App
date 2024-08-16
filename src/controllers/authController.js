@@ -2,8 +2,9 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const ResponseFormatter = require('../utils/responseFormatter');
-// const { expiresIn } = require('../config/jwtConfig');
+const { addTokenToBlacklist } = require('../middleware/blacklistToken');
 const { secret, expiresIn } = require('../config/jwtConfig');
+const { isValidDate } = require('../utils/isValidDate'); 
 /**
  * Handler for user registration.
  *
@@ -13,15 +14,25 @@ const { secret, expiresIn } = require('../config/jwtConfig');
 async function registerHandler(req, res) {
   try {
     const { name, email, password, gender, birthDate, password_confirmation } = req.body;
-    console.log(req.body);
+    
     if (password !== password_confirmation) {
       return ResponseFormatter.fail(res, 'Password confirmation does not match password');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, gender, birthDate, password: hashedPassword });
-
-    return ResponseFormatter.created(res, 'User registered successfully', user);
+    return !isValidDate(birthDate)
+      ? ResponseFormatter.fail(res, 'Invalid birth date format')
+      : (async () => {
+          const hashedPassword = await bcrypt.hash(password, 10);
+          const user = await User.create({
+            name,
+            email,
+            gender,
+            birthDate,
+            password: hashedPassword,
+          });
+          return ResponseFormatter.created(res, 'User registered successfully', user);
+        })();
+    
   } catch (error) {
     return ResponseFormatter.fail(res, error.message, 409);
   }
@@ -106,6 +117,7 @@ async function updatePasswordHandler(req, res) {
 async function logoutHandler(req, res) {
   try {
     const token = req.headers['authorization'].split(' ')[1];
+    addTokenToBlacklist(token)
     return ResponseFormatter.success(res, 'Logout successful');
   } catch (error) {
     return ResponseFormatter.error(res, error.message);

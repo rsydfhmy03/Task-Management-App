@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
+const { secret } = require('../config/jwtConfig');
 const { User } = require('../models');
+const { isTokenBlacklisted } = require('./blacklistToken');
 const ResponseFormatter = require('../utils/responseFormatter');
 
 /**
@@ -8,20 +10,26 @@ const ResponseFormatter = require('../utils/responseFormatter');
  * @function authenticate
  */
 async function authenticate(req, res, next) {
-  const token = req.headers['authorization']?.split(' ')[1];
-  
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
   if (!token) {
-    return ResponseFormatter.fail(res, 'No token provided', 401);
+    return ResponseFormatter.fail(res, 'Unauthorized', 401);
+  }
+
+  // Check if token is blacklisted
+  if (isTokenBlacklisted(token)) {
+    return ResponseFormatter.fail(res, 'Token has been revoked', 401);
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, secret);
     const user = await User.findByPk(decoded.userId);
-    
+
     if (!user) {
       return ResponseFormatter.fail(res, 'User not found', 404);
     }
-    
+
     req.user = user;
     next();
   } catch (error) {

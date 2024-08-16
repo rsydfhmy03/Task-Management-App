@@ -8,11 +8,12 @@ const { generateSimpleIdProject } = require('../utils/generateUniqueId');
  * @function createProjectHandler
  */
 async function createProjectHandler(req, res) {
+  
   try {
     const id = generateSimpleIdProject();
     const { title, description } = req.body;
     const project = await Project.create({id, title , description, userId: req.user.id });
-
+    console.log("Pass Test 3")
     return ResponseFormatter.created(res, 'Project created successfully', project);
   } catch (error) {
     return ResponseFormatter.fail(res, error.message, 400);
@@ -45,15 +46,17 @@ async function getProjectsHandler(req, res) {
 async function updateProjectHandler(req, res) {
   try {
     const { id } = req.params;
-    const { name, description } = req.body;
+    const { title, description } = req.body;
     const project = await Project.findByPk(id);
     
     if (!project) {
       return ResponseFormatter.fail(res, 'Project not found', 404);
     }
 
-    project.name = name || project.name;
-    project.description = description || project.description;
+    // Update hanya field yang disediakan dalam request body
+    if (title !== undefined) project.title = title;
+    if (description !== undefined) project.description = description;
+
     await project.save();
 
     return ResponseFormatter.success(res, 'Project updated successfully', project);
