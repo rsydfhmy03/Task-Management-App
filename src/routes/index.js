@@ -5,6 +5,7 @@ const userRoutes = require('./userRoutes');
 const taskRoutes = require('./taskRoutes');
 const projectRoutes = require('./projectRoutes');
 const responseFormatter = require('../utils/responseFormatter');
+const constants = require('../constants/responseMessages')
 
 /**
  * Use authentication routes.
@@ -44,7 +45,7 @@ router.use('/project', projectRoutes);
  * @name GET /
  */
 router.get('/', (req, res) => {
-    return responseFormatter.success(res, 'Welcome to the Task Management API');
+    return responseFormatter.success(res, constants.WELCOME_MESSAGE)
 });
 
 module.exports = router;

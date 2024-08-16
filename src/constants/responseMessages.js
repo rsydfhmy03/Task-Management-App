@@ -16,7 +16,7 @@ module.exports = {
     NO_FILE_UPLOADED: 'No file uploaded',
     AVATAR_UPDATED_SUCCESS: 'Avatar updated successfully',
     PROFILE_UPDATED_SUCCESS: 'Profile updated successfully',
-    WELCOME_MESSAGE: 'Welcome To API SootheMate V 0.0.1',
+    WELCOME_MESSAGE: 'Welcome to the Task Management API V 0.0.1',
     INTERNAL_SERVER_ERROR: 'Internal Server Error'
   };
   

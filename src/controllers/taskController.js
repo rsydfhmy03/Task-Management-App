@@ -2,34 +2,7 @@ const { Task } = require('../models');
 const ResponseFormatter = require('../utils/responseFormatter');
 const { isValidDate } = require('../utils/isValidDate'); 
 const { generateSimpleIdTask } = require('../utils/generateUniqueId');
-// /**
-//  * Handler for creating a new task.
-//  *
-//  * @async
-//  * @function createTaskHandler
-//  */
-// async function createTaskHandler(req, res) {
-//   try {
-//     const id =generateSimpleIdTask();
-//     const { title, description, due_date, projectId } = req.body;
-//     console.log(req.body)
-//     const task = await Task.create({ id, title, description, due_date, projectId : projectId, userId: req.user.id });
-//     const createdTask = {
-//       id: task.id,
-//       title: task.title,
-//       description: task.description,
-//       due_date: task.due_date,
-//       projectId: task.project_id,
-//       status: task.status,
-//       userId: task.userId,
-//       createdAt: task.createdAt,
-//       updatedAt: task.updatedAt,
-//     };
-//     return ResponseFormatter.created(res, 'Task created successfully', createdTask);
-//   } catch (error) {
-//     return ResponseFormatter.fail(res, error.message, 400);
-//   }
-// }
+
 /**
  * Handler for creating a new task.
  *
