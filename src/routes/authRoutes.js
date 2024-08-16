@@ -1,6 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { registerHandler, loginHandler, updatePasswordHandler, logoutHandler } = require('../controllers/authController');
+const { registerHandler, loginHandler, updatePasswordHandler, logoutHandler, deleteAccountHandler } = require('../controllers/authController');
 const validateRequest = require('../utils/validateRequest');
 const authenticate = require('../middleware/authentication');
 const router = express.Router();
@@ -20,6 +20,13 @@ router.post('/register', registerValidator,  registerHandler);
  * @name POST /auth/login
  */
 router.post('/login', loginValidator, validateRequest, loginHandler);
+
+/**
+ * Route for deleting user account.
+ *
+ * @name DELETE /auth/delete-account
+ */
+router.delete('/delete-account', authenticate, deleteAccountHandler);
 
 /**
  * Route for user logout.

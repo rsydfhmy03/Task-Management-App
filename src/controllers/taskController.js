@@ -101,6 +101,39 @@ async function getTasksHandler(req, res) {
 }
 
 /**
+ * Handler for getting task detail.
+ *
+ * @async
+ * @function getTaskDetailHandler
+ */
+async function getTaskDetailHandler(req, res) {
+  try {
+    const { id } = req.params;
+    const task = await Task.findByPk(id);
+
+    if (!task) {
+      return ResponseFormatter.fail(res, 'Task not found', 404);
+    }
+
+    const taskDetail = {
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      due_date: task.due_date,
+      projectId: task.projectId,
+      status: task.status,
+      userId: task.userId,
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
+    };
+
+    return ResponseFormatter.success(res, 'Task retrieved successfully', taskDetail);
+  } catch (error) {
+    return ResponseFormatter.error(res, error.message);
+  }
+}
+
+/**
  * Handler for updating a task.
  *
  * @async
@@ -170,4 +203,4 @@ async function deleteTaskHandler(req, res) {
   }
 }
 
-module.exports = { createTaskHandler, getTasksHandler, updateTaskHandler, deleteTaskHandler };
+module.exports = { createTaskHandler, getTasksHandler, updateTaskHandler, deleteTaskHandler, getTaskDetailHandler };

@@ -1,6 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { createProjectHandler, getProjectsHandler, updateProjectHandler, deleteProjectHandler } = require('../controllers/projectController');
+const { createProjectHandler, getProjectsHandler, updateProjectHandler, deleteProjectHandler, getProjectDetailHandler } = require('../controllers/projectController');
 const validateRequest = require('../utils/validateRequest');
 const authenticate = require('../middleware/authentication');
 const router = express.Router();
@@ -18,6 +18,13 @@ router.post('/', authenticate, createProjectHandler);
  * @name GET /project
  */
 router.get('/', authenticate, getProjectsHandler);
+
+/**
+ * Get project detail.
+ *
+ * @name GET /project/:id
+ */
+router.get('/:id', authenticate, getProjectDetailHandler); 
 
 /**
  * Update a project.

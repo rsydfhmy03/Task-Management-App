@@ -107,7 +107,30 @@ async function updatePasswordHandler(req, res) {
     return ResponseFormatter.error(res, error.message);
   }
 }
+/**
+ * Handler for deleting user account.
+ *
+ * @async
+ * @function deleteAccountHandler
+ */
+async function deleteAccountHandler(req, res) {
+  try {
+    const user = await User.findByPk(req.user.id);
 
+    if (!user) {
+      return ResponseFormatter.fail(res, 'User not found', 404);
+    }
+
+    await user.destroy();
+
+    const token = req.headers['authorization'].split(' ')[1];
+    addTokenToBlacklist(token);
+
+    return ResponseFormatter.success(res, 'Account deleted successfully');
+  } catch (error) {
+    return ResponseFormatter.error(res, error.message);
+  }
+}
 /**
  * Handler for user logout.
  *
@@ -124,4 +147,4 @@ async function logoutHandler(req, res) {
   }
 }
 
-module.exports = { registerHandler, loginHandler, updatePasswordHandler, logoutHandler };
+module.exports = { registerHandler, loginHandler, updatePasswordHandler, logoutHandler, deleteAccountHandler};

@@ -66,6 +66,27 @@ async function updateProjectHandler(req, res) {
 }
 
 /**
+ * Handler for getting project detail.
+ *
+ * @async
+ * @function getProjectDetailHandler
+ */
+async function getProjectDetailHandler(req, res) {
+  try {
+    const { id } = req.params;
+    const project = await Project.findByPk(id);
+
+    if (!project) {
+      return ResponseFormatter.fail(res, 'Project not found', 404);
+    }
+
+    return ResponseFormatter.success(res, 'Project retrieved successfully', project);
+  } catch (error) {
+    return ResponseFormatter.error(res, error.message);
+  }
+}
+
+/**
  * Handler for deleting a project.
  *
  * @async
@@ -88,4 +109,4 @@ async function deleteProjectHandler(req, res) {
   }
 }
 
-module.exports = { createProjectHandler, getProjectsHandler, updateProjectHandler, deleteProjectHandler };
+module.exports = { createProjectHandler, getProjectsHandler, updateProjectHandler, deleteProjectHandler, getProjectDetailHandler };

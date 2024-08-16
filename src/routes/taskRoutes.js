@@ -1,6 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { createTaskHandler, getTasksHandler, updateTaskHandler, deleteTaskHandler } = require('../controllers/taskController');
+const { createTaskHandler, getTasksHandler, updateTaskHandler, deleteTaskHandler, getTaskDetailHandler} = require('../controllers/taskController');
 const validateRequest = require('../utils/validateRequest');
 const authenticate = require('../middleware/authentication');
 const router = express.Router();
@@ -18,6 +18,13 @@ router.post('/', authenticate, createTaskHandler);
  * @name GET /task
  */
 router.get('/', authenticate, getTasksHandler);
+
+/**
+ * Get task detail.
+ *
+ * @name GET /task/:id
+ */
+router.get('/:id', authenticate, getTaskDetailHandler); 
 
 /**
  * Update a task.
